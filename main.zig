@@ -17,5 +17,12 @@ pub fn main() !void {
         _ = try miStack.pop();
     }
 
+    var iter = miStack.iterator();
+
+    std.debug.print("Iterating over Stack", .{});
+    while (iter.hasNext()) {
+        std.debug.print(" - Found: {?} \n", .{try iter.next()});
+    }
+
     miStack.see();
 }

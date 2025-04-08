@@ -2,7 +2,6 @@ const std = @import("std");
 
 const StackError = error{ StackOverflow, StackUnderflow };
 
-// TODO: iterate over ArrayStack
 pub const ArrayStack = struct {
     allocator: std.mem.Allocator,
     elements: []?i32,
@@ -87,5 +86,29 @@ pub const ArrayStack = struct {
 
     pub fn deinit(self: *ArrayStack) void {
         self.allocator.free(self.elements);
+    }
+
+    pub fn iterator(self: *ArrayStack) ArrayStackIterator {
+        return ArrayStackIterator{
+            .stack = self,
+            .index = 0,
+        };
+    }
+};
+
+const ArrayStackIterator = struct {
+    stack: *ArrayStack,
+    index: usize,
+
+    pub fn hasNext(self: *ArrayStackIterator) bool {
+        return self.index < self.stack.i;
+    }
+
+    pub fn next(self: *ArrayStackIterator) StackError!?i32 {
+        if (!self.hasNext()) return StackError.StackOverflow;
+
+        const val = self.stack.elements[self.index].?;
+        self.index += 1;
+        return val;
     }
 };

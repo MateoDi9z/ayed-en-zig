@@ -53,3 +53,37 @@ test "Underflow returns proper error" {
     const result = stack.pop();
     try testing.expectError(StackError.StackUnderflow, result);
 }
+
+test "ArrayStack iterator works as expected" {
+    var stack = try Stack.init(4);
+    defer stack.deinit();
+
+    try stack.push(10);
+    try stack.push(20);
+    try stack.push(30);
+
+    var iter = stack.iterator();
+    const expected = [_]i32{ 10, 20, 30 };
+    var index: usize = 0;
+
+    while (iter.hasNext()) {
+        const val = try iter.next();
+        try testing.expectEqual(expected[index], val.?);
+        index += 1;
+    }
+
+    try testing.expectEqual(expected.len, index);
+}
+
+test "ArrayStack iterator fails correctly when out of bounds" {
+    var stack = try Stack.init(2);
+    defer stack.deinit();
+
+    try stack.push(42);
+
+    var iter = stack.iterator();
+    _ = try iter.next(); // debería funcionar
+
+    const result = iter.next(); // debería dar error
+    try testing.expectError(error.StackOverflow, result);
+}

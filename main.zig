@@ -1,5 +1,9 @@
 const std = @import("std");
 
+const StackError = error{ StackOverflow, StackUnderflow };
+
+// TODO: resize Stack
+// TODO: iterate over Stack
 const Stack = struct {
     elements: [20]?i32,
     i: u32,
@@ -11,14 +15,24 @@ const Stack = struct {
         };
     }
 
-    // TODO: Handle overflow
-    pub fn push(self: *Stack, element: i32) void {
+    pub fn push(self: *Stack, element: i32) StackError!void {
+        if (self.i == self.elements.len) {
+            std.debug.print("The stack is full", .{});
+            return StackError.StackOverflow;
+        }
+
+        std.debug.print("> Add element \n", .{});
         self.elements[self.i] = element;
         self.i += 1;
     }
 
-    // TODO: Handle underflow
-    pub fn pop(self: *Stack) i32 {
+    pub fn pop(self: *Stack) StackError!i32 {
+        if (self.i == 0) {
+            std.debug.print("The stack is empty", .{});
+            return StackError.StackUnderflow;
+        }
+
+        std.debug.print("> Remove element \n", .{});
         self.i -= 1;
         const last: i32 = self.elements[self.i].?;
         self.elements[self.i] = null; // Avoid Loitering
@@ -30,8 +44,9 @@ const Stack = struct {
     }
 
     pub fn see(self: Stack) void {
-        std.debug.print("Elementos: [", .{});
+        if (self.i == 0) return std.debug.print("Stack is empty. \n", .{});
 
+        std.debug.print("Elementos: [", .{});
         for (self.elements) |n| {
             if (n) |value| {
                 std.debug.print(" {} ", .{value});
@@ -39,21 +54,21 @@ const Stack = struct {
                 std.debug.print(" null ", .{});
             }
         }
-
         std.debug.print("] \n", .{});
     }
 };
 
-pub fn main() void {
+pub fn main() !void {
     // std.debug.print("Hello {s}\n", .{"Word"});
 
     var miStack = Stack.init();
 
     miStack.see();
-    miStack.push(1);
-    miStack.push(2);
-    miStack.push(3);
-    _ = miStack.pop();
+    try miStack.push(1);
+    try miStack.push(2);
+    try miStack.push(3);
+    _ = try miStack.pop();
+    _ = try miStack.pop();
 
     miStack.see();
 }

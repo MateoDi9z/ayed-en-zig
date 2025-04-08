@@ -1,5 +1,7 @@
 # Zig Ayed
 
+[![Zig Tests](https://github.com/MateoDi9z/ayed-en-zig/actions/workflows/main.yml/badge.svg)](https://github.com/MateoDi9z/ayed-en-zig/actions/workflows/main.yml)
+
 Algoritmos y estructuras de datos en Zig.
 
 Install zig with

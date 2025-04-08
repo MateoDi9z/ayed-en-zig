@@ -1,0 +1,27 @@
+name: Zig Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install Zig
+      uses: goto-bus-stop/setup-zig@v2
+      with:
+        version: master
+
+    - name: Run Zig tests
+      run: |
+        for file in $(find . -name "*.test.zig"); do
+          echo "Running tests in $file"
+          zig test "$file"
+        done
